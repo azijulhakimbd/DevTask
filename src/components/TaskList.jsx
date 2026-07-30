@@ -1,9 +1,28 @@
-function TaskList({ tasks, toggleTask, deleteTask }) {
+import TodoCard from './TodoCard';
+
+function TaskList({ tasks, toggleTask, deleteTask, editTaskId, editValue, setEditValue, startEditing, saveEdit, cancelEdit }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-black/20 backdrop-blur">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Tasks</h2>
-        <span className="text-sm text-slate-400">{tasks.length} items</span>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Todo Manager</h2>
+          <p className="mt-1 text-sm text-slate-400">Manage your daily priorities with ease.</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-sm text-slate-300">
+          <span className="rounded-full bg-slate-800 px-3 py-1">Total: {tasks.length}</span>
+          <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-300">
+            Completed: {tasks.filter((task) => task.completed).length}
+          </span>
+          <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-cyan-300">
+            Remaining: {tasks.filter((task) => !task.completed).length}
+          </span>
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        <button className="rounded-full bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950">All</button>
+        <button className="rounded-full bg-slate-800 px-3 py-2 text-sm text-slate-300">Active</button>
+        <button className="rounded-full bg-slate-800 px-3 py-2 text-sm text-slate-300">Completed</button>
       </div>
 
       <div className="space-y-3">
@@ -13,20 +32,18 @@ function TaskList({ tasks, toggleTask, deleteTask }) {
           </p>
         ) : (
           tasks.map((task) => (
-            <div key={task.id} className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/60 p-3">
-              <label className="flex flex-1 cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTask(task.id)}
-                  className="h-4 w-4 rounded border-slate-600 bg-slate-900"
-                />
-                <span className={task.completed ? 'text-slate-500 line-through' : 'text-slate-100'}>{task.title}</span>
-              </label>
-              <button onClick={() => deleteTask(task.id)} className="ml-3 text-sm text-rose-400 hover:text-rose-300">
-                Remove
-              </button>
-            </div>
+            <TodoCard
+              key={task.id}
+              task={task}
+              onToggle={toggleTask}
+              onDelete={deleteTask}
+              onEdit={startEditing}
+              isEditing={editTaskId === task.id}
+              editValue={editValue}
+              setEditValue={setEditValue}
+              onSaveEdit={saveEdit}
+              onCancelEdit={cancelEdit}
+            />
           ))
         )}
       </div>

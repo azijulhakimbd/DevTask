@@ -24,6 +24,8 @@ function HomePage() {
   const [taskInput, setTaskInput] = useState('');
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [editValue, setEditValue] = useState('');
 
   useEffect(() => {
     saveToStorage('devtask-tasks', tasks);
@@ -48,6 +50,28 @@ function HomePage() {
 
   const deleteTask = (id) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
+  };
+
+  const startEditing = (id) => {
+    const task = tasks.find((item) => item.id === id);
+    if (task) {
+      setEditTaskId(id);
+      setEditValue(task.title);
+    }
+  };
+
+  const saveEdit = (id) => {
+    const value = editValue.trim();
+    if (!value) return;
+
+    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, title: value } : task)));
+    setEditTaskId(null);
+    setEditValue('');
+  };
+
+  const cancelEdit = () => {
+    setEditTaskId(null);
+    setEditValue('');
   };
 
   const addNote = (e) => {
@@ -101,7 +125,17 @@ function HomePage() {
         <main className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
           <section id="tasks" className="space-y-6">
             <TaskForm taskInput={taskInput} setTaskInput={setTaskInput} addTask={addTask} />
-            <TaskList tasks={tasks} toggleTask={toggleTask} deleteTask={deleteTask} />
+            <TaskList
+              tasks={tasks}
+              toggleTask={toggleTask}
+              deleteTask={deleteTask}
+              editTaskId={editTaskId}
+              editValue={editValue}
+              setEditValue={setEditValue}
+              startEditing={startEditing}
+              saveEdit={saveEdit}
+              cancelEdit={cancelEdit}
+            />
           </section>
 
           <section id="notes" className="space-y-6">

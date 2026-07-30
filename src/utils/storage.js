@@ -14,3 +14,9 @@ export function saveToStorage(key, value) {
 
   window.localStorage.setItem(key, JSON.stringify(value));
 }
+
+export function removeFromStorage(key) {
+  if (typeof window === 'undefined') return;
+
+  window.localStorage.removeItem(key);
+}

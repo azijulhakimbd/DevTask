@@ -1,9 +1,33 @@
 import TodoCard from './TodoCard';
+import { EmptyTasks, EmptySearchResults } from './EmptyState';
 
-function TaskList({ tasks, toggleTask, deleteTask, editTaskId, editValue, setEditValue, startEditing, saveEdit, cancelEdit }) {
+function TaskList({
+  tasks,
+  toggleTask,
+  deleteTask,
+  editTaskId,
+  editValue,
+  setEditValue,
+  startEditing,
+  saveEdit,
+  cancelEdit,
+  searchQuery,
+  setSearchQuery,
+  filterStatus,
+  setFilterStatus,
+}) {
+  const filteredTasks = tasks.filter((task) => {
+    const query = searchQuery.toLowerCase();
+    const matchesQuery = task.title.toLowerCase().includes(query);
+    const matchesStatus =
+      filterStatus === 'all' || (filterStatus === 'active' && !task.completed) || (filterStatus === 'completed' && task.completed);
+
+    return matchesQuery && matchesStatus;
+  });
+
   return (
-    <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-black/20 backdrop-blur">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="card-hover p-5 sm:p-6 animate-slideUp">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Todo Manager</h2>
           <p className="mt-1 text-sm text-slate-400">Manage your daily priorities with ease.</p>
@@ -11,39 +35,56 @@ function TaskList({ tasks, toggleTask, deleteTask, editTaskId, editValue, setEdi
         <div className="flex flex-wrap gap-2 text-sm text-slate-300">
           <span className="rounded-full bg-slate-800 px-3 py-1">Total: {tasks.length}</span>
           <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-300">
-            Completed: {tasks.filter((task) => task.completed).length}
+            Done: {tasks.filter((task) => task.completed).length}
           </span>
           <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-cyan-300">
-            Remaining: {tasks.filter((task) => !task.completed).length}
+            Active: {tasks.filter((task) => !task.completed).length}
           </span>
         </div>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button className="rounded-full bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950">All</button>
-        <button className="rounded-full bg-slate-800 px-3 py-2 text-sm text-slate-300">Active</button>
-        <button className="rounded-full bg-slate-800 px-3 py-2 text-sm text-slate-300">Completed</button>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search tasks"
+          className="input-base flex-1"
+        />
+        <div className="flex flex-wrap gap-2">
+          {['all', 'active', 'completed'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              className={`btn-sm rounded-full px-4 py-2 ${
+                filterStatus === status ? 'bg-cyan-500 text-slate-950 font-semibold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              {status === 'all' ? 'All' : status === 'active' ? 'Active' : 'Completed'}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-3">
         {tasks.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">
-            No tasks yet. Add one to get started.
-          </p>
+          <EmptyTasks />
+        ) : filteredTasks.length === 0 ? (
+          <EmptySearchResults />
         ) : (
-          tasks.map((task) => (
-            <TodoCard
-              key={task.id}
-              task={task}
-              onToggle={toggleTask}
-              onDelete={deleteTask}
-              onEdit={startEditing}
-              isEditing={editTaskId === task.id}
-              editValue={editValue}
-              setEditValue={setEditValue}
-              onSaveEdit={saveEdit}
-              onCancelEdit={cancelEdit}
-            />
+          filteredTasks.map((task, idx) => (
+            <div key={task.id} style={{ animation: `slideUp 0.4s ease-out ${idx * 50}ms backwards` }}>
+              <TodoCard
+                task={task}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+                onEdit={startEditing}
+                isEditing={editTaskId === task.id}
+                editValue={editValue}
+                setEditValue={setEditValue}
+                onSaveEdit={saveEdit}
+                onCancelEdit={cancelEdit}
+              />
+            </div>
           ))
         )}
       </div>

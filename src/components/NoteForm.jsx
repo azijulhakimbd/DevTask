@@ -12,10 +12,10 @@ function NoteForm({ noteTitle, setNoteTitle, noteContent, setNoteContent, addNot
         setError('');
         addNote(e);
       }}
-      className="rounded-3xl border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-black/20 backdrop-blur"
+      className="card-hover p-5 sm:p-6 animate-slideUp"
     >
-      <h2 className="text-xl font-semibold">Create a note</h2>
-      <div className="mt-4 space-y-3">
+      <h2 className="text-xl font-semibold mb-4">Create a note</h2>
+      <div className="space-y-3">
         <input
           value={noteTitle}
           onChange={(e) => {
@@ -23,7 +23,7 @@ function NoteForm({ noteTitle, setNoteTitle, noteContent, setNoteContent, addNot
             if (error) setError('');
           }}
           placeholder="Note title"
-          className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none placeholder:text-slate-400"
+          className="input-base"
         />
         <textarea
           value={noteContent}
@@ -33,17 +33,17 @@ function NoteForm({ noteTitle, setNoteTitle, noteContent, setNoteContent, addNot
           }}
           rows="4"
           placeholder="Write your thoughts..."
-          className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none placeholder:text-slate-400"
+          className="input-base resize-none"
         />
         <button
           type="submit"
           disabled={isInvalid}
-          className="rounded-2xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+          className="btn-primary !bg-violet-500 hover:!bg-violet-400"
         >
           Save Note
         </button>
       </div>
-      {error ? <p className="mt-2 text-sm text-rose-400">{error}</p> : null}
+      {error ? <p className="mt-2 text-sm text-rose-400 animate-slideUp">{error}</p> : null}
     </form>
   );
 }

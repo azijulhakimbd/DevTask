@@ -1,4 +1,5 @@
 import NoteCard from './NoteCard';
+import { EmptyNotes, EmptySearchResults } from './EmptyState';
 
 function NoteList({
   notes,
@@ -24,57 +25,56 @@ function NoteList({
   });
 
   const filteredNotes = sortedNotes.filter((note) => {
-    const query = searchQuery.toLowerCase();
+    const query = (searchQuery || '').toLowerCase();
     return note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query);
   });
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-black/20 backdrop-blur">
-      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="card-hover p-5 sm:p-6 animate-slideUp">
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Notes Manager</h2>
           <p className="mt-1 text-sm text-slate-400">Search, sort, and organize your ideas.</p>
         </div>
-        <div className="text-sm text-slate-400">{notes.length} saved</div>
+        <div className="text-sm text-slate-400 font-medium">{notes.length} saved</div>
       </div>
 
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-6 flex flex-col gap-2 sm:gap-3 sm:flex-row sm:items-end">
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search notes"
-          className="flex-1 rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none placeholder:text-slate-400"
+          placeholder="Search notes..."
+          className="input-base flex-1 min-w-0"
         />
         <select
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
-          className="rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none"
+          className="input-base bg-slate-950/70 cursor-pointer w-full sm:w-auto sm:flex-shrink-0"
         >
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
         </select>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 lg:gap-4">
         {filteredNotes.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400 md:col-span-2">
-            No notes found. Try a different search or create a new one.
-          </p>
+          notes.length === 0 ? <EmptyNotes /> : <EmptySearchResults />
         ) : (
-          filteredNotes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onDelete={deleteNote}
-              onEdit={startEditing}
-              isEditing={editNoteId === note.id}
-              editTitle={editTitle}
-              setEditTitle={setEditTitle}
-              editContent={editContent}
-              setEditContent={setEditContent}
-              onSaveEdit={saveEdit}
-              onCancelEdit={cancelEdit}
-            />
+          filteredNotes.map((note, idx) => (
+            <div key={note.id} style={{ animation: `slideUp 0.4s ease-out ${idx * 50}ms backwards` }}>
+              <NoteCard
+                note={note}
+                onDelete={deleteNote}
+                onEdit={startEditing}
+                isEditing={editNoteId === note.id}
+                editTitle={editTitle}
+                setEditTitle={setEditTitle}
+                editContent={editContent}
+                setEditContent={setEditContent}
+                onSaveEdit={saveEdit}
+                onCancelEdit={cancelEdit}
+              />
+            </div>
           ))
         )}
       </div>

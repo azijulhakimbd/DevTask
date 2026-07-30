@@ -8,3 +8,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 coverage/
+.idea
+.mcp.json
+.profile
+.vscode
+.ripgreprc
+.zprofile
+.zshrc
+.gitconfig
+.gitmodules
+.bashrc
+.bash_profile
+.claude 

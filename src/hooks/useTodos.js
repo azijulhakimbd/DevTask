@@ -11,6 +11,8 @@ function useTodos() {
   const [taskInput, setTaskInput] = useState('');
   const [editTaskId, setEditTaskId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   const completedTasks = useMemo(() => tasks.filter((task) => task.completed).length, [tasks]);
   const remainingTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
@@ -62,6 +64,10 @@ function useTodos() {
     editTaskId,
     editValue,
     setEditValue,
+    searchQuery,
+    setSearchQuery,
+    filterStatus,
+    setFilterStatus,
     completedTasks,
     remainingTasks,
     addTask,

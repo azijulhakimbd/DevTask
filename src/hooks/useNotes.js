@@ -18,13 +18,15 @@ function useNotes() {
 
   const addNote = (e) => {
     e.preventDefault();
-    if (!noteTitle.trim() || !noteContent.trim()) return;
+    const trimmedTitle = noteTitle.trim();
+    const trimmedContent = noteContent.trim();
+    if (trimmedTitle.length < 3 || trimmedContent.length < 3) return;
 
     setNotes((prev) => [
       {
         id: Date.now(),
-        title: noteTitle.trim(),
-        content: noteContent.trim(),
+        title: trimmedTitle,
+        content: trimmedContent,
         createdAt: new Date().toLocaleDateString(),
       },
       ...prev,

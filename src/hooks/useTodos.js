@@ -17,9 +17,10 @@ function useTodos() {
 
   const addTask = (e) => {
     e.preventDefault();
-    if (!taskInput.trim()) return;
+    const trimmed = taskInput.trim();
+    if (trimmed.length < 3) return;
 
-    setTasks((prev) => [{ id: Date.now(), title: taskInput.trim(), completed: false }, ...prev]);
+    setTasks((prev) => [{ id: Date.now(), title: trimmed, completed: false }, ...prev]);
     setTaskInput('');
   };
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import StatCard from '../components/StatCard';
 import TaskForm from '../components/TaskForm';
@@ -26,6 +27,8 @@ function HomePage() {
     cancelEditTask,
   } = useTodos();
 
+  const [taskError, setTaskError] = useState('');
+
   const {
     notes,
     noteTitle,
@@ -47,6 +50,8 @@ function HomePage() {
     saveEditNote,
     cancelEditNote,
   } = useNotes();
+
+  const [noteError, setNoteError] = useState('');
 
   return (
     <div className="min-h-screen bg-transparent px-4 py-5 text-slate-100 sm:px-6 lg:px-8 lg:py-8">
@@ -87,7 +92,7 @@ function HomePage() {
 
         <main className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
           <section id="tasks" className="space-y-6">
-            <TaskForm taskInput={taskInput} setTaskInput={setTaskInput} addTask={addTask} />
+            <TaskForm taskInput={taskInput} setTaskInput={setTaskInput} addTask={addTask} error={taskError} setError={setTaskError} />
             <TaskList
               tasks={tasks}
               toggleTask={toggleTask}
@@ -108,6 +113,8 @@ function HomePage() {
               noteContent={noteContent}
               setNoteContent={setNoteContent}
               addNote={addNote}
+              error={noteError}
+              setError={setNoteError}
             />
             <NoteList
               notes={notes}

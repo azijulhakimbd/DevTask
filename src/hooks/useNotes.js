@@ -1,32 +1,37 @@
 import { useState } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { validateString } from '../utils/helpers';
 
-const initialNotes = [
+const INITIAL_NOTES = [
   { id: 1, title: 'Project idea', content: 'Build a calm dashboard with focus modes.', createdAt: '7/30/2026' },
   { id: 2, title: 'Meeting prep', content: 'Gather insights and action items for tomorrow.', createdAt: '7/30/2026' },
 ];
 
+/**
+ * Hook for managing notes
+ * Handles CRUD operations, searching, and sorting
+ */
 function useNotes() {
-  const [notes, setNotes] = useLocalStorage('devtask-notes', initialNotes);
+  const [notes, setNotes] = useLocalStorage('devtask-notes', INITIAL_NOTES);
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
   const [editNoteId, setEditNoteId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [noteSearchQuery, setNoteSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
 
   const addNote = (e) => {
     e.preventDefault();
-    const trimmedTitle = noteTitle.trim();
-    const trimmedContent = noteContent.trim();
-    if (trimmedTitle.length < 3 || trimmedContent.length < 3) return;
+    const title = validateString(noteTitle, 3);
+    const content = validateString(noteContent, 3);
+    if (!title || !content) return;
 
-    setNotes((prev) => [
+    setNotes(prev => [
       {
         id: Date.now(),
-        title: trimmedTitle,
-        content: trimmedContent,
+        title,
+        content,
         createdAt: new Date().toLocaleDateString(),
       },
       ...prev,
@@ -36,11 +41,11 @@ function useNotes() {
   };
 
   const deleteNote = (id) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
+    setNotes(prev => prev.filter(note => note.id !== id));
   };
 
   const startEditingNote = (id) => {
-    const note = notes.find((item) => item.id === id);
+    const note = notes.find(n => n.id === id);
     if (note) {
       setEditNoteId(id);
       setEditTitle(note.title);
@@ -49,11 +54,13 @@ function useNotes() {
   };
 
   const saveEditNote = (id) => {
-    const title = editTitle.trim();
-    const content = editContent.trim();
+    const title = validateString(editTitle, 3);
+    const content = validateString(editContent, 3);
     if (!title || !content) return;
 
-    setNotes((prev) => prev.map((note) => (note.id === id ? { ...note, title, content } : note)));
+    setNotes(prev =>
+      prev.map(note => note.id === id ? { ...note, title, content } : note)
+    );
     setEditNoteId(null);
     setEditTitle('');
     setEditContent('');
@@ -66,6 +73,7 @@ function useNotes() {
   };
 
   return {
+    // State
     notes,
     noteTitle,
     setNoteTitle,
@@ -76,10 +84,11 @@ function useNotes() {
     setEditTitle,
     editContent,
     setEditContent,
-    searchQuery,
-    setSearchQuery,
+    noteSearchQuery,
+    setNoteSearchQuery,
     sortOrder,
     setSortOrder,
+    // Actions
     addNote,
     deleteNote,
     startEditingNote,

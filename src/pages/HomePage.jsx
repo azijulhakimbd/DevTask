@@ -26,6 +26,11 @@ function HomePage() {
   const [noteContent, setNoteContent] = useState('');
   const [editTaskId, setEditTaskId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [editNoteId, setEditNoteId] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('newest');
 
   useEffect(() => {
     saveToStorage('devtask-tasks', tasks);
@@ -77,13 +82,47 @@ function HomePage() {
   const addNote = (e) => {
     e.preventDefault();
     if (!noteTitle.trim() || !noteContent.trim()) return;
-    setNotes((prev) => [{ id: Date.now(), title: noteTitle.trim(), content: noteContent.trim() }, ...prev]);
+    setNotes((prev) => [
+      {
+        id: Date.now(),
+        title: noteTitle.trim(),
+        content: noteContent.trim(),
+        createdAt: new Date().toLocaleDateString(),
+      },
+      ...prev,
+    ]);
     setNoteTitle('');
     setNoteContent('');
   };
 
   const deleteNote = (id) => {
     setNotes((prev) => prev.filter((note) => note.id !== id));
+  };
+
+  const startEditingNote = (id) => {
+    const note = notes.find((item) => item.id === id);
+    if (note) {
+      setEditNoteId(id);
+      setEditTitle(note.title);
+      setEditContent(note.content);
+    }
+  };
+
+  const saveEditNote = (id) => {
+    const title = editTitle.trim();
+    const content = editContent.trim();
+    if (!title || !content) return;
+
+    setNotes((prev) => prev.map((note) => (note.id === id ? { ...note, title, content } : note)));
+    setEditNoteId(null);
+    setEditTitle('');
+    setEditContent('');
+  };
+
+  const cancelEditNote = () => {
+    setEditNoteId(null);
+    setEditTitle('');
+    setEditContent('');
   };
 
   return (
@@ -146,7 +185,22 @@ function HomePage() {
               setNoteContent={setNoteContent}
               addNote={addNote}
             />
-            <NoteList notes={notes} deleteNote={deleteNote} />
+            <NoteList
+              notes={notes}
+              deleteNote={deleteNote}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              editNoteId={editNoteId}
+              editTitle={editTitle}
+              setEditTitle={setEditTitle}
+              editContent={editContent}
+              setEditContent={setEditContent}
+              startEditing={startEditingNote}
+              saveEdit={saveEditNote}
+              cancelEdit={cancelEditNote}
+            />
           </section>
         </main>
 
